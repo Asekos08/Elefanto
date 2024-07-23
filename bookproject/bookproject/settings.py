@@ -171,9 +171,9 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Your API Title',
     'DESCRIPTION': 'Your API Description',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,  # Set to True if you want to serve the schema
-    'COMPONENT_SPLIT_REQUEST': True,  # Split request body components for better reuse
-    'JSON_EDITOR': True,  # Enable JSON editor in the Swagger UI
+    'SERVE_INCLUDE_SCHEMA': False, 
+    'COMPONENT_SPLIT_REQUEST': True, 
+    'JSON_EDITOR': True,
     'SECURITY': [
         {
             'BearerAuth': []

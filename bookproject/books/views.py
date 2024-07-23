@@ -29,9 +29,14 @@ class ReviewViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retri
     serializer_class = ReviewSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(author=self.request.user)
+
     @action(detail=False, methods=['get'], url_path='my-reviews')
     def my_reviews(self, request):
-        """Get the logged-in user's own reviews."""
         user = request.user
         reviews = Review.objects.filter(author=user)
         serializer = ReviewSerializer(reviews, many=True)
@@ -46,7 +51,16 @@ class FavoriteViewSet(mixins.ListModelMixin,
     serializer_class = FavoriteSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return Favorite.objects.filter(user=user)
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=False, methods=['get'], url_path='my-favorites')
+    def my_favorites(self, request):
+        user = request.user
+        favorites = Favorite.objects.filter(user=user)
+        serializer = FavoriteSerializer(favorites, many=True)
+        return Response(serializer.data)
 

@@ -17,7 +17,22 @@ class ReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Review
-        fields = '__all__'
+        fields = ['id', 'rating', 'text', 'book', 'author']
+        read_only_fields = ['author']
+
+    def validate_rating(self, value):
+        if not (1 <= value <= 5):
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            user = request.user
+            book = data.get('book')
+            if Review.objects.filter(author=user, book=book).exists():
+                raise serializers.ValidationError("You have already reviewed this book.")
+        return data
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -34,4 +49,14 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        fields = '__all__'
+        fields = ['id', 'book', 'user']
+        read_only_fields = ['user']
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and request.method == 'POST':
+            user = request.user
+            book = data.get('book')
+            if Favorite.objects.filter(user=user, book=book).exists():
+                raise serializers.ValidationError("You have already marked this book as favorite.")
+        return data
